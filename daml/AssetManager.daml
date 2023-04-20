@@ -72,7 +72,7 @@ placeOrder2 = do
   zoe <- allocateParty "Zoe"
   zoe <- allocateParty "Zoe"
   sam <- allocateParty "Sam"
-  submit zoe do
+  submit zoe do -- Notice if you change it by Sam will not have authorization as an issuer
     createCmd Order with
       issuer = zoe
       buyer = zoe
