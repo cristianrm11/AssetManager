@@ -1,9 +1,9 @@
 module AssetManager where
 import Daml.Script
-import DA.Text
 
 type Agent = Party
 type Investor = Party
+type Quantity = Int
 
 template Asset
   with
@@ -15,6 +15,14 @@ template Asset
     signatory owner
     observer owner
 
+template Portfolio
+  with
+    owner : Investor
+    holdings : [(Asset, Quantity)]
+  where
+    signatory owner
+
+
 createAsset : Script (ContractId Asset)
 createAsset = do
   zoe <- allocateParty "Zoe"
@@ -25,3 +33,11 @@ createAsset = do
       price = 143.16
       owner = zoe
 
+createPortfolio: Script (ContractId Portfolio)
+createPortfolio = do
+  jim <- allocateParty "Jim"
+  submit jim do
+    createCmd Portfolio with
+      owner = jim
+      holdings = []
+      -- holdings = [(Asset with symbol = "AAPL", 215)]
