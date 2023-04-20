@@ -34,6 +34,16 @@ template Order
     signatory issuer
     observer seller, buyer
 
+template Investment
+  with
+    owner : Investor
+    asset : Asset
+    initialInvestment : Decimal
+    -- returnDate : Date
+    returnAmount : Decimal
+  where
+    signatory owner
+
 createAsset : Script (ContractId Asset)
 createAsset = do
   zoe <- allocateParty "Zoe"
@@ -80,3 +90,27 @@ placeOrder2 = do
       symbol = "MSFT"
       quantity = 10
       price = 315.85
+
+
+createInvestment : Script (ContractId Investment)
+createInvestment = do
+  alice <- allocateParty "Alice"
+  zoe <- allocateParty "Zoe"
+  assetCid <- submit zoe do
+    createCmd Asset with
+      symbol = "AAPL"
+      name = "Apple Inc."
+      price = 143.16
+      owner = zoe
+  let asset = Asset with
+        symbol = "AAPL"
+        name = "Apple Inc."
+        price = 143.16
+        owner = zoe
+  submit alice do
+    createCmd Investment with
+      owner = alice
+      asset = asset
+      initialInvestment = 1000.0
+      -- returnDate = date 2023 Jan 1
+      returnAmount = 1100.0
