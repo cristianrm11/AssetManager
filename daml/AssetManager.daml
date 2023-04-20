@@ -41,8 +41,36 @@ template Investment
     initialInvestment : Decimal
     -- returnDate : Date
     returnAmount : Decimal
+    status : Bool
   where
     signatory owner
+    observer owner
+    choice AcceptOffer : ContractId Investment
+      with
+        acceptAmount : Decimal
+        status: Bool
+      controller owner
+      do
+        create Investment with
+          owner = owner
+          asset = asset
+          initialInvestment = initialInvestment + acceptAmount
+          --returnDate = returnDate
+          returnAmount = returnAmount
+          status = True
+    choice RejectOffer : ContractId Investment
+      with
+        rejectedAmount : Decimal
+        status : Bool
+      controller owner
+      do
+        create Investment with
+          owner = owner
+          asset = asset
+          initialInvestment = initialInvestment + rejectedAmount
+          --returnDate = returnDate
+          returnAmount = returnAmount
+          status = False
 
 createAsset : Script (ContractId Asset)
 createAsset = do
@@ -114,3 +142,55 @@ createInvestment = do
       initialInvestment = 1000.0
       -- returnDate = date 2023 Jan 1
       returnAmount = 1100.0
+      status = True
+
+
+-- testAcceptOffer : Script (ContractId Investment)
+-- testAcceptOffer = do
+--   brad <- allocateParty "Brad"
+--   zoe <- allocateParty "Zoe"
+--   appleCid <- submit zoe do
+--     createCmd Asset with
+--       symbol = "AAPL"
+--       name = "Apple Inc."
+--       price = 143.16
+--       owner = zoe
+--   let apple = Asset with
+--         symbol = "AAPL"
+--         name = "Apple Inc."
+--         price = 143.16
+--         owner = zoe
+--   investCid <- submit brad do
+--     createCmd Investment with
+--       owner = brad
+--       asset = apple
+--       initialInvestment = 1000.0
+--       returnAmount = 1100.0
+--       status = True
+--   submit brad do
+--     exerciseCmd investCid AcceptOffer
+
+-- testRejectOffer : Script (ContractId Investment)
+-- testRejectOffer = do
+--   brad <- allocateParty "Brad"
+--   zoe <- allocateParty "Zoe"
+--   appleCid <- submit zoe do
+--     createCmd Asset with
+--       symbol = "AAPL"
+--       name = "Apple Inc."
+--       price = 143.16
+--       owner = zoe
+--   let apple = Asset with
+--         symbol = "AAPL"
+--         name = "Apple Inc."
+--         price = 143.16
+--         owner = zoe
+--   investCid <- submit brad do
+--     createCmd Investment with
+--       owner = brad
+--       asset = apple
+--       initialInvestment = 1000.0
+--       returnAmount = 1100.0
+--       status = False
+--   submit brad do
+--     exerciseCmd investCid RejectOffer
