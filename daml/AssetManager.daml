@@ -22,6 +22,17 @@ template Portfolio
   where
     signatory owner
 
+template Order
+  with
+    issuer : Party
+    buyer : Investor
+    seller : Investor
+    symbol : Text
+    quantity : Quantity
+    price : Decimal    
+  where 
+    signatory issuer
+    observer seller, buyer
 
 createAsset : Script (ContractId Asset)
 createAsset = do
@@ -41,3 +52,31 @@ createPortfolio = do
       owner = jim
       holdings = []
       -- holdings = [(Asset with symbol = "AAPL", 215)]
+
+placeOrder : Script (ContractId Order)
+placeOrder = do
+  bot <- allocateParty "Bot"
+  zoe <- allocateParty "Zoe"
+  sam <- allocateParty "Sam"
+  submit bot do
+    createCmd Order with
+      issuer = bot
+      buyer = zoe
+      seller = sam
+      symbol = "AAPL"
+      quantity = 50
+      price = 140.0
+
+placeOrder2 : Script (ContractId Order)
+placeOrder2 = do
+  zoe <- allocateParty "Zoe"
+  zoe <- allocateParty "Zoe"
+  sam <- allocateParty "Sam"
+  submit zoe do
+    createCmd Order with
+      issuer = zoe
+      buyer = zoe
+      seller = sam
+      symbol = "MSFT"
+      quantity = 10
+      price = 315.85
