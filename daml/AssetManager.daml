@@ -1,0 +1,27 @@
+module AssetManager where
+import Daml.Script
+import DA.Text
+
+type Agent = Party
+type Investor = Party
+
+template Asset
+  with
+    symbol : Text
+    name : Text
+    price : Decimal
+    owner : Investor
+  where
+    signatory owner
+    observer owner
+
+createAsset : Script (ContractId Asset)
+createAsset = do
+  zoe <- allocateParty "Zoe"
+  submit zoe do
+    createCmd Asset with
+      symbol = "AAPL"
+      name = "Apple Inc."
+      price = 143.16
+      owner = zoe
+
