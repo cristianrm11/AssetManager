@@ -4,8 +4,7 @@ The following project contains several templates:
 
 - Asset
 - Portfolio
-- Order
-- Trade
+- Order (Trade)
 - Investment
 
 ## Description of the project
